@@ -41,9 +41,9 @@ client.on("ready", async () => {
 client.login(process.env.token); // Login
 
 client.on("interactionCreate", async (interaction) => {
-  await interaction.deferReply(); // Defer the reply so we can edit it later
   // Slash command got run
   if (interaction.commandName === "64id" && interaction.isCommand()) {
+    await interaction.deferReply(); // Defer the reply so we can edit it later
     const steamLink = interaction.options.getString("steamlink");
     steam
       .resolve(steamLink)
