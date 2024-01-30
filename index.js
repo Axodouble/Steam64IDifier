@@ -38,7 +38,16 @@ client.on("ready", async () => {
   console.log("Bot is ready!");
 });
 
-client.login(process.env.token); // Login
+function login() {
+  client.login(process.env.token).catch((error) => {
+    console.error(error);
+    setTimeout(() => {
+      login();
+    }, 60000);
+  });
+}
+
+login();
 
 client.on("interactionCreate", async (interaction) => {
   // Slash command got run
