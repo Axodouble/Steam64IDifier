@@ -1,5 +1,9 @@
 const { EmbedBuilder } = require("@discordjs/builders");
 const discord = require("discord.js");
+/**
+ * Represents a Discord client.
+ * @type {discord.Client}
+ */
 const client = new discord.Client({
   intents: [
     discord.IntentsBitField.Flags.Guilds,
@@ -11,15 +15,13 @@ const client = new discord.Client({
 require("dotenv").config();
 
 const SteamAPI = require("steamapi");
-const steam = new SteamAPI(process.env.steam_api);
+const steam = new SteamAPI(process.env.STEAM_TOKEN);
 
 client.on("ready", async () => {
-  // Check if the bot has a command with the name 64id
   const commands = await client.application.commands.fetch();
   const existingCommand = commands.find((command) => command.name === "64id");
 
   if (!existingCommand) {
-    // If not, register it
     await client.application.commands.create(
       new discord.SlashCommandBuilder()
         .setName("64id")
@@ -39,7 +41,7 @@ client.on("ready", async () => {
 });
 
 function login() {
-  client.login(process.env.token).catch((error) => {
+  client.login(process.env.DISCORD_TOKEN).catch((error) => {
     console.error(error);
     setTimeout(() => {
       login();
@@ -50,9 +52,8 @@ function login() {
 login();
 
 client.on("interactionCreate", async (interaction) => {
-  // Slash command got run
   if (interaction.commandName === "64id" && interaction.isCommand()) {
-    await interaction.deferReply(); // Defer the reply so we can edit it later
+    await interaction.deferReply(); 
     const steamLink = interaction.options.getString("steamlink");
     steam
       .resolve(steamLink)
@@ -68,7 +69,6 @@ client.on("interactionCreate", async (interaction) => {
       });
   }
 
-  // Hide the message / delete it
   if (interaction.isButton()) {
     if (interaction.customId === "delete") {
       interaction.message.delete();
@@ -77,13 +77,11 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 client.on("messageCreate", async (message) => {
-  if (message.author.bot) return; // Check if the user is a bot
-  const steamLinkRegex = /https?:\/\/steamcommunity\.com\/id\/([^\s/]+)/gi; // Regex to findd the steam link
-  const matches = message.content.match(steamLinkRegex); // Still the regex
+  if (message.author.bot) return;
+  const steamLinkRegex = /https?:\/\/steamcommunity\.com\/id\/([^\s/]+)/gi;
+  const matches = message.content.match(steamLinkRegex); 
   if (matches) {
-    // If there are matches
     matches.forEach(async (match) => {
-      // Go through all matches
       const id64 = await steam.resolve(match);
       message.reply({
         embeds: [
@@ -106,11 +104,11 @@ client.on("messageCreate", async (message) => {
           ]),
         ],
         allowedMentions: { repliedUser: false },
-      }); // Reply with the 64ID and a button to hide the message
+      })
     });
   }
 });
 
 process.on("uncaughtException", (error) => {
-  console.error(error); // Prevent the bot from crashing
+  console.error(error);
 });
