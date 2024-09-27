@@ -29,7 +29,7 @@ client.on("ready", async () => {
         .addStringOption((option) =>
           option
             .setName("steamlink")
-            .setDescription("The steam link of the user.")
+            .setDescription("The steam link of the user")
             .setRequired(true)
         )
     );
