@@ -37,7 +37,10 @@ client.on("ready", async () => {
     new discord.SlashCommandBuilder()
       .setName("uptime")
       .setDescription("Get the bot's uptime")
-  );
+    
+  ).
+
+  client.application.commands.
 
   console.log("Bot is ready!");
 });
@@ -71,7 +74,7 @@ client.on("interactionCreate", async (interaction) => {
       });
   }
   if (interaction.commandName === "uptime" && interaction.isCommand()) {
-    await interaction.deferReply();
+    await interaction.deferReply({ephemeral: true});
     const uptime = process.uptime();
     const days = Math.floor(uptime / 86400);
     const hours = Math.floor(uptime / 3600) % 24;
