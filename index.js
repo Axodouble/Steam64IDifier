@@ -19,7 +19,7 @@ const steam = new SteamAPI(process.env.STEAM_TOKEN);
 
 client.on("ready", async () => {
   await client.user.setActivity({
-    name: "STEAM-URLS",
+    name: "64id's",
     type: discord.ActivityType.Watching,
   });
   await client.application.commands.create(
