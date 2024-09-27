@@ -18,24 +18,26 @@ const SteamAPI = require("steamapi");
 const steam = new SteamAPI(process.env.STEAM_TOKEN);
 
 client.on("ready", async () => {
-  const commands = await client.application.commands.fetch();
-  const existingCommand = commands.find((command) => command.name === "64id");
-
-  if (!existingCommand) {
-    await client.application.commands.create(
-      new discord.SlashCommandBuilder()
-        .setName("64id")
-        .setDescription("Fetch a user's 64ID")
-        .addStringOption((option) =>
-          option
-            .setName("steamlink")
-            .setDescription("The steam link of the user")
-            .setRequired(true)
-        )
-    );
-
-    console.log("Registered 64ID command!");
-  }
+  await client.user.setActivity({
+    name: "STEAM-URLS",
+    type: discord.ActivityType.Watching,
+  });
+  await client.application.commands.create(
+    new discord.SlashCommandBuilder()
+      .setName("64id")
+      .setDescription("Fetch a user's 64ID")
+      .addStringOption((option) =>
+        option
+          .setName("steamlink")
+          .setDescription("The steam link of the user")
+          .setRequired(true)
+      )
+  );
+  await client.application.commands.create(
+    new discord.SlashCommandBuilder()
+      .setName("uptime")
+      .setDescription("Get the bot's uptime")
+  );
 
   console.log("Bot is ready!");
 });
@@ -53,7 +55,7 @@ login();
 
 client.on("interactionCreate", async (interaction) => {
   if (interaction.commandName === "64id" && interaction.isCommand()) {
-    await interaction.deferReply(); 
+    await interaction.deferReply();
     const steamLink = interaction.options.getString("steamlink");
     steam
       .resolve(steamLink)
@@ -68,6 +70,17 @@ client.on("interactionCreate", async (interaction) => {
         });
       });
   }
+  if (interaction.commandName === "uptime" && interaction.isCommand()) {
+    await interaction.deferReply();
+    const uptime = process.uptime();
+    const days = Math.floor(uptime / 86400);
+    const hours = Math.floor(uptime / 3600) % 24;
+    const minutes = Math.floor(uptime / 60) % 60;
+    const seconds = Math.floor(uptime % 60);
+    interaction.editReply({
+      content: `Uptime: ${days}d ${hours}h ${minutes}m ${seconds}s`,
+    });
+  }
 
   if (interaction.isButton()) {
     if (interaction.customId === "delete") {
@@ -79,7 +92,7 @@ client.on("interactionCreate", async (interaction) => {
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   const steamLinkRegex = /https?:\/\/steamcommunity\.com\/id\/([^\s/]+)/gi;
-  const matches = message.content.match(steamLinkRegex); 
+  const matches = message.content.match(steamLinkRegex);
   if (matches) {
     matches.forEach(async (match) => {
       const id64 = await steam.resolve(match);
