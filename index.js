@@ -25,7 +25,7 @@ client.on("ready", async () => {
     type: discord.ActivityType.Watching,
   });
 
-  client.application.commands.cache.forEach(async (command) => {
+  await client.application.commands.cache.forEach(async (command) => {
     await client.application.commands.delete(command);
   });
 
