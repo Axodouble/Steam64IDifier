@@ -1,5 +1,8 @@
 const { EmbedBuilder } = require("@discordjs/builders");
 const discord = require("discord.js");
+const { execSync } = require("child_process");
+const os = require("os");
+
 /**
  * Represents a Discord client.
  * @type {discord.Client}
@@ -22,6 +25,11 @@ client.on("ready", async () => {
     name: "64id's",
     type: discord.ActivityType.Watching,
   });
+
+  client.application.commands.cache.forEach(async (command) => {
+    await client.application.commands.delete(command);
+  });
+
   await client.application.commands.create(
     new discord.SlashCommandBuilder()
       .setName("64id")
@@ -35,9 +43,8 @@ client.on("ready", async () => {
   );
   await client.application.commands.create(
     new discord.SlashCommandBuilder()
-      .setName("uptime")
+      .setName("info")
       .setDescription("Get the bot's uptime")
-
   )
   console.log("Bot is ready!");
 });
@@ -71,15 +78,17 @@ client.on("interactionCreate", async (interaction) => {
         });
       });
   }
-  if (interaction.commandName === "uptime" && interaction.isCommand()) {
-    await interaction.deferReply({ ephemeral: true });
-    const uptime = process.uptime();
-    const days = Math.floor(uptime / 86400);
-    const hours = Math.floor(uptime / 3600) % 24;
-    const minutes = Math.floor(uptime / 60) % 60;
-    const seconds = Math.floor(uptime % 60);
+  if (interaction.commandName === "info" && interaction.isCommand()) {
+    await interaction.deferReply();
+    let embed = new EmbedBuilder().setTitle("Bot Info")
+      .setDescription(`` +
+        `\nBot Build: \`${execSync("git rev-parse --short HEAD").toString().trim()}\`` +
+        `\nBot Uptime: ${Math.floor(process.uptime() / 86400)}d ${Math.floor(process.uptime() / 3600) % 24}h ${Math.floor(process.uptime() / 60) % 60}m ${Math.floor(process.uptime() % 60)}s` +
+        `\nHost Uptime: ${Math.floor(os.uptime() / 86400)}d ${Math.floor(os.uptime() / 3600) % 24}h ${Math.floor(os.uptime() / 60) % 60}m ${Math.floor(os.uptime() % 60)}s` +
+        `\nHost Platform: ${os.platform()}`
+      )
     interaction.editReply({
-      content: `Uptime: ${days}d ${hours}h ${minutes}m ${seconds}s`,
+      embeds: [embed],
     });
   }
 
