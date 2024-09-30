@@ -2,10 +2,10 @@
   "name": "steam64idifier",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "bun index.js"
   },
   "dependencies": {
-    "discord.js": "^14.14.1",
+    "discord.js": "^14.16.3",
     "dotenv": "^16.3.1",
     "steamapi": "^2.4.2"
   }

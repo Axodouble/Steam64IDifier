@@ -15,7 +15,7 @@ const client = new discord.Client({
 require("dotenv").config();
 
 const SteamAPI = require("steamapi");
-const steam = new SteamAPI(process.env.STEAM_TOKEN);
+const steam = new SteamAPI(process.env.STEAM_TOKEN)
 
 client.on("ready", async () => {
   await client.user.setActivity({
@@ -37,11 +37,8 @@ client.on("ready", async () => {
     new discord.SlashCommandBuilder()
       .setName("uptime")
       .setDescription("Get the bot's uptime")
-    
-  ).
 
-  client.application.commands.
-
+  )
   console.log("Bot is ready!");
 });
 
@@ -67,14 +64,15 @@ client.on("interactionCreate", async (interaction) => {
           content: `64ID: [${id64}](https://steamcommunity.com/profiles/${id64})`,
         });
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error(err.stack)
         interaction.editReply({
           content: `Invalid steam link.`,
         });
       });
   }
   if (interaction.commandName === "uptime" && interaction.isCommand()) {
-    await interaction.deferReply({ephemeral: true});
+    await interaction.deferReply({ ephemeral: true });
     const uptime = process.uptime();
     const days = Math.floor(uptime / 86400);
     const hours = Math.floor(uptime / 3600) % 24;

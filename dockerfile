@@ -1,7 +1,6 @@
-FROM node:22-alpine
+FROM oven/bun:alpine
 
 COPY . .
-RUN npm i --omit=dev --no-package-lock
-USER node
+RUN bun install
 
 CMD ["node","./index.js"]
