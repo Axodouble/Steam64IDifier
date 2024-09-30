@@ -1,6 +1,5 @@
 const { EmbedBuilder } = require("@discordjs/builders");
 const discord = require("discord.js");
-const { execSync } = require("child_process");
 const os = require("os");
 
 /**
@@ -81,8 +80,7 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.commandName === "info" && interaction.isCommand()) {
     await interaction.deferReply();
     let embed = new EmbedBuilder().setTitle("Bot Info")
-      .setDescription(`` +
-        `\nBot Build: \`${execSync("git rev-parse --short HEAD").toString().trim()}\`` +
+      .setDescription(
         `\nBot Uptime: ${Math.floor(process.uptime() / 86400)}d ${Math.floor(process.uptime() / 3600) % 24}h ${Math.floor(process.uptime() / 60) % 60}m ${Math.floor(process.uptime() % 60)}s` +
         `\nHost Uptime: ${Math.floor(os.uptime() / 86400)}d ${Math.floor(os.uptime() / 3600) % 24}h ${Math.floor(os.uptime() / 60) % 60}m ${Math.floor(os.uptime() % 60)}s` +
         `\nHost Platform: ${os.platform()}`
