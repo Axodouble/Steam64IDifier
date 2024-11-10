@@ -1,3 +1,4 @@
+// @ts-check
 const { EmbedBuilder } = require("@discordjs/builders");
 const discord = require("discord.js");
 const os = require("os");
@@ -16,20 +17,33 @@ const client = new discord.Client({
 });
 require("dotenv").config();
 
+if(!process.env.DISCORD_TOKEN || !process.env.STEAM_TOKEN) {
+  console.error("Please provide a DISCORD_TOKEN and STEAM_TOKEN in the .env file.");
+  process.exit(1);
+}
+
 const SteamAPI = require("steamapi");
 const steam = new SteamAPI(process.env.STEAM_TOKEN)
 
-client.on("ready", async () => {
-  await client.user.setActivity({
+function setActivity(client) {
+  client.user.setActivity({
     name: "64id's",
     type: discord.ActivityType.Watching,
   });
 
-  await client.application.commands.cache.forEach(async (command) => {
-    await client.application.commands.delete(command);
+  setTimeout(() => {
+    setActivity(client);
+  }, 60000);
+}
+
+client.on("ready", async () => {
+  setActivity(client);
+
+  client.application?.commands.cache.forEach(async (command) => {
+    await client.application?.commands.delete(command);
   });
 
-  await client.application.commands.create(
+  await client.application?.commands.create(
     new discord.SlashCommandBuilder()
       .setName("64id")
       .setDescription("Fetch a user's 64ID")
@@ -40,7 +54,7 @@ client.on("ready", async () => {
           .setRequired(true)
       )
   );
-  await client.application.commands.create(
+  await client.application?.commands.create(
     new discord.SlashCommandBuilder()
       .setName("info")
       .setDescription("Get the bot's uptime")
@@ -59,6 +73,11 @@ function login() {
 
 login();
 
+/**
+ * @param {discord.ChatInputCommandInteraction} interaction
+ * @returns {void}
+ * @listens discord.Client#interactionCreate
+ */
 client.on("interactionCreate", async (interaction) => {
   if (interaction.commandName === "64id" && interaction.isCommand()) {
     await interaction.deferReply();
